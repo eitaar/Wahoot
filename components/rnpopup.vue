@@ -1,7 +1,7 @@
 <template>
     <div id="popup">
         <div id="popup_close" type="button" @click="$emit('closePopup')"></div>
-        <div v-html="html"></div>
+        <ReleasenoteNewest/>
     </div>
 </template>
 
@@ -19,6 +19,7 @@
         border-radius: 5px;
         z-index: 3;
         text-align: left;
+        box-shadow: 3px 3px 5px 5px rgba(0, 0, 0, 0.5);
     }
     #popup_close:before {
         position: absolute;
@@ -32,8 +33,3 @@
     }
 </style>
 
-<script>
-export default {
-    props: ["html"]
-};
-</script>

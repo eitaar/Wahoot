@@ -1,7 +1,7 @@
 <template>
     <button ref="settingBtn" @click="openSettings" class="settingBtn">
       <div class="imgContainer">
-        <img id="settingImg" src="/assets/img/settings.png" alt="Settings">
+        <img id="settingImg" src="/assets/img/settings.webp" alt="Settings">
       </div>
       Settings
     </button>

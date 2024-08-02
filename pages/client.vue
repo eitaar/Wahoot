@@ -4,10 +4,6 @@
 </template>
 
 <script>
-definePageMeta({
-  middleware: ['auth'], // もしくは 'auth'
-  // middleware: 'auth',
-})
 import { Client } from '~/assets/src/kahoot/kahoot';
 const client = new Client();
 export default {
@@ -21,7 +17,7 @@ export default {
     },
     methods: {
         async join() {
-            client.join(parseInt(this.pin), `Wahoot!${Date.now()}`);
+            client.join(parseInt(this.pin), `\u200e`);
             client.on("joined", () => {
                 this.pin = `Joined ${this.pin}`;
             })

@@ -6,7 +6,7 @@
     <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
     <div id="input" class="center" ref="input">
         <styledinput ref="gamePinInput"placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" disabled />
-        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" id="nicknameInput"v-else/>
+        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput"v-else/>
         <styledbtn @click="checkPin" ref="gamePinSubmitBtn"v-if="isPinInput" />
         <div div v-else>
           <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" style="opacity: 0;" disabled/>
@@ -18,8 +18,8 @@
         <span v-html="notification.message"></span>
       </div>
     </div>
-    <p style="color: #fff; text-align: left; position: absolute; bottom: -0.5%; cursor: pointer;" @click="verPopup = !verPopup">ver {{ ver }} </p>
-    <popup v-show="verPopup" @closePopup="verPopup = !verPopup" :html="releaseNote" />
+    <p style="color: #fff; text-align: left; position: absolute; bottom: -0.5%; cursor: pointer;user-select: none;" @click="verPopup = !verPopup">{{ ver }} </p>
+    <rnpopup v-show="verPopup" @closePopup="verPopup = !verPopup"/>
     <settingbtn :style="{backgroundColor:acc2Color}"/>
   </div>
 </template>
@@ -27,10 +27,10 @@
 <script setup>
 import { Client } from '~/assets/src/kahoot/kahoot';
 import { ref, onMounted, computed, nextTick } from 'vue';
-import { useColorStore } from '~/stores/pageColor';
+
 const { base, sub, acc1, acc2, setColor, changeColorToDefault} = useColorStore();
 const client = new Client();
-const ver = ref('0.0.21');
+const ver = ref('Indev 20240802');
 const notifications = ref([
   { message: "<h1>test</h1>" },
   { message: "<p>error?</p>" }
@@ -48,16 +48,18 @@ const baseColor = ref(base);
 const subColor = ref(sub);
 const acc2Color = ref(acc2);
 
-const releaseNote = computed(() => {
-  return `<h2 style="text-align:center;border-bottom:2px solid #898989">Release Note ${ver.value}</h2><ul><li>dk</li></ul>`;
-});
-
 onMounted(() => {
   gamePinInput.value.styledInput.disabled = false;
   gamePinInput.value.styledInput.focus();
   console.log("loaded");
+  if (localStorage.getItem("clientVersion") == undefined) {
+    localStorage.setItem("clientVersion", ver.value);
+    verPopup.value = true;
+  } else if (localStorage.getItem("clientVersion") != ver.value) {
+    verPopup.value = true;
+    localStorage.setItem("clientVersion", ver.value);
+  }
 });
-
 const checkPin = async () => {
     if (gamePin.value.startsWith("/test")) {
       transformInput();
@@ -72,7 +74,6 @@ const checkPin = async () => {
       }
     }
 };
-
 const transformInput = async () => {
   gamePinSubmitBtn.value.styledBtn.disabled = false;
   gamePinInput.value.styledInput.classList.add("shrink");
@@ -104,11 +105,7 @@ const transformInput = async () => {
       });
   });
 };
-
-const delay = (time) => {
-  return new Promise((resolve) => setTimeout(resolve, time));
-};
-
+const delay = (time) => {return new Promise((resolve) => setTimeout(resolve, time));};
 const generateNickname = async() => {
   const nickNameResponse = await ((await (fetch("https://apis.kahoot.it/namerator"))).json()) ;
   nickname.value = nickNameResponse.name;
@@ -150,8 +147,8 @@ body {
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: -1;
-  height: 75vmin;
-  width: 75vmin;
+  height: 28.125vmin;
+  width: 50vmin;
   user-select: none;
   animation: showLogo 2s linear;
   
@@ -185,31 +182,16 @@ body {
   position: absolute;
   left: 72.5%;
 }
-
-.fadein {
-  animation: fadeIn 1s linear;
-}
 .shrink {
   animation: shrink 1s ease-in-out;
 }
-
 .expand {
   animation: expand 1s ease-in-out;
 }
 .sb_expand {
   animation: sb_expand 1s ease-in-out;
 }
-@keyframes showInputArea {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+@keyframes showInputArea {0% {opacity: 0;}10% {opacity: 0;}100% {opacity: 1;}}
 @keyframes expand {
   0% {
     width: 0%;
@@ -250,24 +232,5 @@ body {
     opacity: 0;
   }
 }
-@keyframes showLogo {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
+@keyframes showLogo {0% {opacity: 0;}10% {opacity: 0;}100% {opacity: 1;}}
 </style>
