@@ -1,10 +1,14 @@
 <template>
     <div>
-        <h2 id="top">Release Note Indev 20240805</h2>
+        <h2 id="top">Release Note Indev 20240803</h2>
+        <h4 class="newTitle">New</h4>
+        <ul class="new-list">
+            <li><span>made setting screen (still working).</span></li>
+            <li><span>made home sceen (/) (still working).</span></li>
+        </ul>
         <h4 class="updateTitle">Update/Fix</h4>
         <ul class="update-list">
-            <li><span>added opening/closing animation for setting popup.</span></li>
-            <li><span>changed setting button to just icon and added animation on load.</span></li>
+            <li><span>Changed color theme.</span></li>
         </ul>
         <!--<h4 class="removedTitle">Removed</h4>-->
     </div>

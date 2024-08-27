@@ -5,6 +5,7 @@
     @input="$emit('update:modelValue', $event.target.value)"
     ref="styledInput"
     autocomplete="off"
+    
   />
 </template>
 

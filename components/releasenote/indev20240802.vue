@@ -1,10 +1,16 @@
 <template>
     <div>
-        <h2 id="top">Release Note Indev 20240805</h2>
+        <h2 id="top">Release Note Indev 20240802</h2>
+        <h4 class="newTitle">New</h4>
+        <ul class="new-list">
+            <li><span>made a page loading animation.</span></li>
+            <li><span>made a animation to change from pin input to nickname input.</span></li>
+            <li><span>made /version page</span></li>
+        </ul>
         <h4 class="updateTitle">Update/Fix</h4>
         <ul class="update-list">
-            <li><span>added opening/closing animation for setting popup.</span></li>
-            <li><span>changed setting button to just icon and added animation on load.</span></li>
+            <li><span>Changed from option api to composition api.</span></li>
+            <li><span>Changed color theme.</span></li>
         </ul>
         <!--<h4 class="removedTitle">Removed</h4>-->
     </div>

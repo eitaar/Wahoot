@@ -32,7 +32,7 @@ function secondHandshake(serverTime, clientId) {
     }];
 }
 
-function ackCreator(msgid, clientId, ack) {
+function ping(msgid, clientId, ack) {
     return [{
         "id": msgid,
         "channel": "/meta/connect",
@@ -89,23 +89,6 @@ function joinGame(gamePin, nickName, clientId, msgid) {
     }];
 }
 
-function ping(clientId, msgid, ack) {
-    return [{
-        "id": msgid,
-        "channel": "/meta/connect",
-        "connectionType": "websocket",
-        "clientId": clientId,
-        "ext": {
-            "ack": ack,
-            "timesync": {
-                "tc": Date.now(),
-                "l": l,
-                "o": o
-            }
-        }
-        }]
-}
-
 export {
-    createHandshake, secondHandshake, joinGame, ackCreator, afterJoinGame, ping
+    createHandshake, secondHandshake, joinGame, ping, afterJoinGame
 }

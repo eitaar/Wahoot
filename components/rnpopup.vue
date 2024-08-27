@@ -17,7 +17,7 @@
         padding: 20px;
         border: 1px solid rgba(0, 0, 0, 0.95);
         border-radius: 5px;
-        z-index: 3;
+        z-index: 100;
         text-align: left;
         box-shadow: 3px 3px 5px 5px rgba(0, 0, 0, 0.5);
     }

@@ -2,6 +2,8 @@
     <p>{{ page }}/{{ totalPage }}</p>
     <div id="textWrapper" ref="textWrapper">
         <ReleasenoteNewest class="text" v-show="page == 1"/>
+        <ReleasenoteIndev20240803 class="text" v-show="page==2" />
+        <ReleasenoteIndev20240802 class="text" v-show="page==3"/>
     </div>
     <div ref="back" id="backNote" @click="pageBack" v-show="page != 1" tabindex="0"/>
     <div ref="next" id="nextNote" @click="nextPage" v-show="page != totalPage" tabindex="0"/>
@@ -11,7 +13,7 @@
 import { ref } from 'vue';
 
 const page = ref(1);
-const totalPage = ref(1);
+const totalPage = ref(3 );
 const textWrapper = ref(null);
 
 const delay = (time) => {

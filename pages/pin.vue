@@ -1,10 +1,10 @@
 <template>
-  <div id="background" :style="{backgroundColor:baseColor}" />
+  <div id="background" :style="{backgroundColor:base}" />
   <div>
-    <square :style="{backgroundColor:subColor}"/>
-    <ellipsis :style="{backgroundColor:subColor}"/>
-    <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
-    <div id="input" class="center" ref="input">
+    <square :style="{backgroundColor:sub}"/>
+    <ellipsis :style="{backgroundColor:sub}"/>
+    <img src="/assets/img/wahootIndev.webp" alt="Wahoot logo" id="wahoot_logo" />
+    <div id="input" class="center" ref="input" >
         <styledinput ref="gamePinInput"placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" disabled />
         <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput"v-else/>
         <styledbtn @click="checkPin" ref="gamePinSubmitBtn"v-if="isPinInput" />
@@ -20,7 +20,7 @@
     </div>
     <p style="color: #fff; text-align: left; position: absolute; bottom: -0.5%; cursor: pointer;user-select: none;" @click="verPopup = !verPopup">{{ ver }} </p>
     <rnpopup v-show="verPopup" @closePopup="verPopup = !verPopup"/>
-    <settingbtn :style="{backgroundColor:acc2Color}"/>
+    <setting />
   </div>
 </template>
 
@@ -30,7 +30,7 @@ import { ref, onMounted, computed, nextTick } from 'vue';
 
 const { base, sub, acc1, acc2, setColor, changeColorToDefault} = useColorStore();
 const client = new Client();
-const ver = ref('Indev 20240802');
+const ver = ref('Indev 20240805');
 const notifications = ref([
   { message: "<h1>test</h1>" },
   { message: "<p>error?</p>" }
@@ -44,9 +44,6 @@ const nicknameInput = ref(null);
 const gamePinSubmitBtn = ref(null);
 const nicknameGenerateBtn = ref(false);
 const nicknameSubmitBtn = ref(false);
-const baseColor = ref(base);
-const subColor = ref(sub);
-const acc2Color = ref(acc2);
 
 onMounted(() => {
   gamePinInput.value.styledInput.disabled = false;
@@ -59,6 +56,7 @@ onMounted(() => {
     verPopup.value = true;
     localStorage.setItem("clientVersion", ver.value);
   }
+  localStorage.setItem("aa",JSON.stringify({"a":true}))
 });
 const checkPin = async () => {
     if (gamePin.value.startsWith("/test")) {
@@ -83,14 +81,14 @@ const transformInput = async () => {
     gamePinInput.value.styledInput.value = "";
     gamePinSubmitBtn.value.styledBtn.textContent = "";
   });
-  delay(1000).then(() => {
+  delay(750).then(() => {
       isPinInput.value=false;
       nextTick(()=> {
         nicknameInput.value.styledInput.placeholder = ""; 
         nicknameInput.value.styledInput.classList.add("expand");
         nicknameGenerateBtn.value.styledSmallBtn.classList.add("sb_expand");
         nicknameSubmitBtn.value.styledSmallBtn.classList.add("sb_expand");
-        delay(750).then(()=>{
+        delay(500).then(()=>{
           nicknameInput.value.styledInput.placeholder = "Nickname";
           nicknameGenerateBtn.value.styledSmallBtn.textContent = "Generate";
           nicknameSubmitBtn.value.styledSmallBtn.textContent = "Enter";
@@ -116,6 +114,7 @@ const submitNickname = () => {
   if (nickname.value == 0) {
     console.log("enter nickname");
   } else {
+    client.join(gamePin.value, nickname.value);
     console.log(`Data: pin:${gamePin.value} nickname: ${nickname.value}`);
   }
 };
@@ -123,8 +122,8 @@ const submitNickname = () => {
 
 <style>
 body {
-  overflow: hidden;
   text-align: center;
+  overflow: hidden;
 }
 #background {
   position: fixed;
@@ -183,13 +182,13 @@ body {
   left: 72.5%;
 }
 .shrink {
-  animation: shrink 1s ease-in-out;
+  animation: shrink 0.75s ease-in-out;
 }
 .expand {
-  animation: expand 1s ease-in-out;
+  animation: expand 0.75s ease-in-out;
 }
 .sb_expand {
-  animation: sb_expand 1s ease-in-out;
+  animation: sb_expand 0.75s ease-in-out;
 }
 @keyframes showInputArea {0% {opacity: 0;}10% {opacity: 0;}100% {opacity: 1;}}
 @keyframes expand {
