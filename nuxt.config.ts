@@ -2,10 +2,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
   build: {
-    transpile: ['moment'],
-    rollupOptions: {
-      external: ['/assets/img/wahootIndev.webp']
-    }
   },
   modules: ['v-wave/nuxt','@pinia/nuxt','@pinia-plugin-persistedstate/nuxt'],
   app: {

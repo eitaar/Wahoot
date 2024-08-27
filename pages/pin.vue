@@ -3,7 +3,7 @@
   <div>
     <square :style="{backgroundColor:sub}"/>
     <ellipsis :style="{backgroundColor:sub}"/>
-    <img src="/assets/img/wahootIndev.webp" alt="Wahoot logo" id="wahoot_logo" />
+    <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
     <div id="input" class="center" ref="input" >
         <styledinput ref="gamePinInput"placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" disabled />
         <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput"v-else/>
