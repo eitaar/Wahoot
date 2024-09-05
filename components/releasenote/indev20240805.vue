@@ -1,10 +1,10 @@
 <template>
     <div>
-        <h2 id="top">Release Note Indev 20240905</h2>
+        <h2 id="top">Release Note Indev 20240805</h2>
         <h4 class="updateTitle">Update/Fix</h4>
         <ul class="update-list">
-            <li><span>changed setting popup etc.</span></li>
-            <li><span>continuing making client</span></li>
+            <li><span>added opening/closing animation for setting popup.</span></li>
+            <li><span>changed setting button to just icon and added animation on load.</span></li>
         </ul>
         <!--<h4 class="removedTitle">Removed</h4>-->
     </div>

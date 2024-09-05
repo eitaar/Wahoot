@@ -2,8 +2,9 @@
     <p>{{ page }}/{{ totalPage }}</p>
     <div id="textWrapper" ref="textWrapper">
         <ReleasenoteNewest class="text" v-show="page == 1"/>
-        <ReleasenoteIndev20240803 class="text" v-show="page==2" />
-        <ReleasenoteIndev20240802 class="text" v-show="page==3"/>
+        <ReleasenoteIndev20240805 class=""text v-show="page == 2"/>
+        <ReleasenoteIndev20240803 class="text" v-show="page==3" />
+        <ReleasenoteIndev20240802 class="text" v-show="page==4"/>
     </div>
     <div ref="back" id="backNote" @click="pageBack" v-show="page != 1" tabindex="0"/>
     <div ref="next" id="nextNote" @click="nextPage" v-show="page != totalPage" tabindex="0"/>

@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { createHandshake, secondHandshake, joinGame, ping, afterJoinGame } from "./template";
+import { createHandshake, secondHandshake, joinGame, ping, afterJoinGame, changeCostumeTemplate } from "./template";
 import { delay } from "./other";
 
 export class Client extends EventEmitter {
@@ -8,13 +8,20 @@ export class Client extends EventEmitter {
         this.ws = null;
         this.ack = 0;
         this.msgid = 1;
-        this.clientData = { "pin": undefined, "nickname": undefined, "clientId": undefined, "cid": undefined };
+        this.clientData = {
+            pin: undefined,
+            nickname: undefined,
+            clientId: undefined,
+            cid: undefined
+        };
         this.gameData = undefined;
     }
 
+    // Fetch game data
     async getGameData(gamePin) {
         try {
             const response = await fetch(`/api/getGameToken/?pin=${gamePin}`);
+            if (!response.ok) throw new Error(`Failed to fetch game data: ${response.statusText}`);
             const data = await response.json();
             this.gameData = data;
             return data;
@@ -24,36 +31,48 @@ export class Client extends EventEmitter {
         }
     }
 
+    // Check if the game PIN is valid
     async checkPin(gamePin) {
         try {
-            await this.getGameData(gamePin);
-            return this.gameData.status === 200;
+            const data = await this.getGameData(gamePin);
+            return data.status === 200;
         } catch (error) {
-            this.emit('error', error);
             return false;
         }
     }
 
-    async join(gamePin, nickName) {
-        this.clientData.nickname = nickName;
+    // Join the game
+    async join(gamePin, nickname) {
+        this.clientData.nickname = nickname;
         try {
-            await this.getGameData(gamePin);
-            if (this.gameData.status !== 200) {
+            const gameData = await this.getGameData(gamePin);
+            if (gameData.status !== 200) {
                 this.emit('error', new Error("Invalid game pin"));
                 return;
             }
             this.clientData.pin = gamePin;
-            this.defineWebSocket(gamePin, this.gameData.gameToken);
+            this.defineWebSocket(gamePin, gameData.gameToken);
         } catch (error) {
             this.emit('error', error);
         }
     }
 
+    // Change costume
+    async changeCostume(cos1, cos2) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.msgid++;
+            this.wsEmitter("changeCostume", changeCostumeTemplate(cos1, cos2, this.msgid));
+        } else {
+            this.emit('wserror', new Error("WebSocket is not open"));
+        }
+    }
+
+    // WebSocket connection and event handlers
     defineWebSocket(gamePin, gameToken) {
         try {
             this.ws = new WebSocket(`wss://kahoot.it/cometd/${gamePin}/${gameToken}`);
             this.ws.onopen = () => {
-                this.wsHandler('handshake', createHandshake());
+                this.wsEmitter('handshake', createHandshake());
             };
             this.ws.onerror = (error) => {
                 this.emit('wserror', error);
@@ -65,57 +84,89 @@ export class Client extends EventEmitter {
                 this.emit('wsdisconnect');
             };
         } catch (error) {
-            this.emit('error', error);1
+            this.emit('error', error);
         }
     }
 
-    wsHandler(action, data) {
+    // Send messages through WebSocket
+    wsEmitter(action, data) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            try {
+                this.ws.send(JSON.stringify(data));
+            } catch (error) {
+                this.emit('wserror', `${action},${error}`);
+            }
+        } else {
+            this.emit('wserror', new Error("WebSocket is not open"));
+        }
+    }
+
+    // Handle incoming WebSocket messages
+    async handleWebSocketMessage(message) {
         try {
-            this.ws.send(JSON.stringify(data));
+            const response = JSON.parse(message.data)[0];
+            const channel = response.channel.substring(1).split("/");
+            if (response.ext && response.ext.ack !== undefined) {
+                this.ack = response.ext.ack;
+            }
+            switch (channel[0]) {
+                case "meta":
+                    await this.metaWsHandler(channel, response);
+                    break;
+                case "service":
+                    await this.serviceWsHandler(channel, response);
+                    break;
+                default:
+                    this.emit("wserror", new Error("Unknown channel"));
+            }
         } catch (error) {
             this.emit('wserror', error);
         }
     }
 
-    async handleWebSocketMessage(message) {
+    // Handle meta channels
+    async metaWsHandler(channel, data) {
         try {
-            const response = JSON.parse(message.data)[0];
-            if (response.ext && response.ext.ack !== undefined) {
-                this.ack = response.ext.ack;
+            if (channel[1] !== "connect") {
+                switch (this.msgid) {
+                    case 1:
+                        this.msgid++;
+                        this.clientData.clientId = data.clientId;
+                        this.wsEmitter("secondhandshake", secondHandshake(data.ext.timesync, this.clientData.clientId, this.msgid));
+                        await delay(750);  
+                        this.msgid++; 
+                        this.wsEmitter("joinGame", joinGame(
+                            this.clientData.pin,
+                            this.clientData.nickname,
+                            this.msgid
+                        ));
+                        break;
+                    default:
+                        console.log("Unhandled action in metaWsHandler: ", this.msgid, JSON.parse(data));
+                        break;
+                }
+            } else {
+                this.msgid++;
+                this.wsEmitter("ping", ping(this.msgid, this.ack));
             }
-            switch (this.msgid) {
-                case 1:
-                    this.clientData.clientId = response.clientId;
-                    console.log(this.clientData.clientId);
-                    this.wsHandler("secondHandshake", secondHandshake(response.ext.timesync, this.clientData.clientId));
-                    this.msgid++;
-                    break;
-                case 2:
-                    this.msgid++;
-                    this.wsHandler("ping", ping(this.msgid, this.clientData.clientId, this.ack));
-                    await delay(500);
-                    this.msgid++;
-                    this.wsHandler("joinGame", joinGame(
-                        this.clientData.pin,
-                        this.clientData.nickname.replace(/\\u([\dA-Fa-f]{4})/g, (match, grp) => String.fromCharCode(parseInt(grp, 16))),
-                        this.clientData.clientId,
-                        this.msgid
-                    ));
-                    break;
-                case 4:
-                    this.msgid++;
-                    console.log("444444444444444");
-                    this.wsHandler("ping", ping(this.msgid, this.clientData.clientId, this.ack + 1));
+        } catch (error) {
+            this.emit('wserror', error);
+        }
+    }
+
+    // Handle service channels
+    async serviceWsHandler(channel, data) {
+        try {
+            switch (channel[1]) {
+                case "controller":
+                    if (data.data && data.data.type === "loginResponse") {
+                        this.msgid++;
+                        this.wsEmitter("afterJoinGame", afterJoinGame(this.msgid));
+                        this.emit('joined');
+                    }
                     break;
                 default:
-                    this.msgid++;
-                    if (response.data && response.data.type === "loginResponse") {
-                        this.wsHandler("afterJoinGame", afterJoinGame(this.clientData.pin, this.msgid, this.clientData.clientId));
-                        this.emit('joined');
-                    } else {
-                        console.log(response);
-                    }
-                    this.msgid++;
+                    console.log("Unhandled action in serviceWsHandler:", this.msgid, data);
                     break;
             }
         } catch (error) {

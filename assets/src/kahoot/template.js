@@ -1,5 +1,7 @@
-let l;
-let o;
+let l = 0;
+let o = 0;
+let gamePin = '';
+let clientId = '';
 
 function createHandshake() {
     return [{
@@ -16,11 +18,12 @@ function createHandshake() {
     }];
 }
 
-function secondHandshake(serverTime, clientId) {
+function secondHandshake(serverTime, clientid, msgId) {
     l = Math.round((Date.now() - serverTime.tc - serverTime.p) / 2);
     o = serverTime.ts - serverTime.tc - l;
+    clientId = clientid;
     return [{
-        "id": "2",
+        "id": msgId.toString(),
         "channel": "/meta/connect",
         "connectionType": "websocket",
         "advice": {"timeout": 0},
@@ -32,9 +35,9 @@ function secondHandshake(serverTime, clientId) {
     }];
 }
 
-function ping(msgid, clientId, ack) {
+function ping(msgId, ack) {
     return [{
-        "id": msgid,
+        "id": msgId.toString(),
         "channel": "/meta/connect",
         "connectionType": "websocket",
         "clientId": clientId,
@@ -45,16 +48,16 @@ function ping(msgid, clientId, ack) {
                 "l": l,
                 "o": o
             }
-        }
+        }   
     }];
 }   
 
-function afterJoinGame(gamePin, msgid, clientId) {
+function afterJoinGame(msgId) { 
     return [{
-        "id": msgid,
+        "id": msgId.toString(),
         "channel": "/service/controller",
         "data": {
-            "gameid": gamePin,
+            "gameid": gamePin.toString(),
             "type": "message",
             "host": "kahoot.it",
             "id": 16,
@@ -65,21 +68,22 @@ function afterJoinGame(gamePin, msgid, clientId) {
     }];
 }
 
-function joinGame(gamePin, nickName, clientId, msgid) {
+function joinGame(gamepin, nickName, msgId) {
+    gamePin = gamepin.toString();
     return [{
-        "id": msgid,
+        "id": msgId.toString(),
         "channel": "/service/controller",
         "data": {
             "type": "login",
             "gameid": gamePin,
             "host": "kahoot.it",
-            "name": nickName,
+            "name": nickName.toString(),
             "content": JSON.stringify({
                 "device": {
                     "userAgent": navigator.userAgent,
                     "screen": {
-                        "width": "1920",
-                        "height": "1080"
+                        "width": screen.width.toString(),
+                        "height": screen.height.toString()
                     }
                 }
             })
@@ -89,6 +93,25 @@ function joinGame(gamePin, nickName, clientId, msgid) {
     }];
 }
 
-export {
-    createHandshake, secondHandshake, joinGame, ping, afterJoinGame
+function changeCostumeTemplate(cos1, cos2, msgId) {
+    if (!gamePin || !clientId) {
+        throw new Error("gamePin and clientId must be set before sending the changeCostumeTemplate message.");
+    }
+    return [{
+        "id": msgId.toString(),
+        "channel": "/service/controller",
+        "data": {
+            "gameid": gamePin.toString(),
+            "type": "message",
+            "host": "kahoot.it",
+            "id": 46,
+            "content": `{"avatar":{"type":"${cos1.toString()}","item":"${cos2.toString()}"}}`
+        },
+        "clientId": clientId,
+        "ext": {}
+    }];
 }
+
+export {
+    createHandshake, secondHandshake, joinGame, ping, afterJoinGame, changeCostumeTemplate
+};

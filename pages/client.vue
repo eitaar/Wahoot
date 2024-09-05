@@ -1,29 +1,45 @@
 <template>
-    <span ref="sppan"><h1>aa</h1></span>
+    <span><h1>Test Client</h1></span>
     <input type="input" v-model="pin" placeholder="pin" />
     <input type="input" v-model="name" placeholder="name" />
     <button @click="join">Join</button>
-    <button @click="gd">gd</button>
-    <span ref="cs"></span>
+    <button @click="name = Date.now()">time</button><br/>
+    <input type="input" v-model="cos1" placeholder="cos1" />
+    <input type="input" v-model="cos2" placeholder="cos2" />   
+    <button @click="cost">change costume</button>
+    <ul id="console" style="margin-top:100px">
+        <li v-for="log in logs" :key="log.message">{{ log.message }}</li>
+    </ul>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { Client } from '~/assets/src/kahoot/kahoot';
 
+// Define reactive references for the input fields
 const client = new Client();
 const pin = ref("");
 const name = ref("");
-const sppan = ref(null);
-const cs = ref(null);
-const join = async () => {
-    await client.join(parseInt(pin.value), name.value);
-    client.on("joined", () => {
-        console.log(`Joined ${pin.value}`);
-    });
-};
+const cos1 = ref("");
+const cos2 = ref("");
 
-const gd = async() => {
-    await console.log(client.getGameData(parseInt(pin.value)));
-};
+// Use ref to make logs reactive
+const logs = ref([]);
+
+// Join function
+async function join() {
+    await client.join(parseInt(pin.value), `wahoot.${name.value}`);
+}
+
+// Listen to the "joined" event and update logs
+client.on("joined", () => {
+    console.log(`Joined ${pin.value}`);
+    logs.value.push({ message: `Joined in game with pin: ${pin.value}` });
+    console.log(logs.value);
+});
+
+// Costume change function
+async function cost() {
+    await client.changeCostume(cos1.value, cos2.value);
+}
 </script>

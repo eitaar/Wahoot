@@ -3,7 +3,7 @@
   <div>
     <square :style="{backgroundColor:sub}"/>
     <ellipsis :style="{backgroundColor:sub}"/>
-    <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
+    <img src="/assets/img/wahootIndev.webp" alt="Wahoot logo" id="wahoot_logo" />
     <div id="input" class="center" ref="input" >
         <styledinput ref="gamePinInput"placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" disabled />
         <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput"v-else/>
@@ -30,7 +30,7 @@ import { ref, onMounted, computed, nextTick } from 'vue';
 
 const { base, sub, acc1, acc2, setColor, changeColorToDefault} = useColorStore();
 const client = new Client();
-const ver = ref('Indev 20240805');
+const ver = ref('Indev 20240905');
 const notifications = ref([
   { message: "<h1>test</h1>" },
   { message: "<p>error?</p>" }
@@ -51,12 +51,12 @@ onMounted(() => {
   console.log("loaded");
   if (localStorage.getItem("clientVersion") == undefined) {
     localStorage.setItem("clientVersion", ver.value);
+    localStorage.setItem("moduleConfig",JSON.stringify({"iNG":true})) 
     verPopup.value = true;
   } else if (localStorage.getItem("clientVersion") != ver.value) {
     verPopup.value = true;
     localStorage.setItem("clientVersion", ver.value);
   }
-  localStorage.setItem("aa",JSON.stringify({"a":true}))
 });
 const checkPin = async () => {
     if (gamePin.value.startsWith("/test")) {
