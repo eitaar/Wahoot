@@ -14,7 +14,7 @@
 import { ref } from 'vue';
 
 const page = ref(1);
-const totalPage = ref(3 );
+const totalPage = ref(4);
 const textWrapper = ref(null);
 
 const delay = (time) => {

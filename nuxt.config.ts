@@ -1,8 +1,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
-  build: {
-  },
   modules: ['v-wave/nuxt','@pinia/nuxt','@pinia-plugin-persistedstate/nuxt'],
   app: {
     head: {
@@ -20,5 +18,5 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
       ],
     }
-  }
+  },
 })

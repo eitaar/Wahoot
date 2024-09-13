@@ -7,6 +7,7 @@
     <input type="input" v-model="cos1" placeholder="cos1" />
     <input type="input" v-model="cos2" placeholder="cos2" />   
     <button @click="cost">change costume</button>
+    <button @click="fa">fetch</button>
     <ul id="console" style="margin-top:100px">
         <li v-for="log in logs" :key="log.message">{{ log.message }}</li>
     </ul>
@@ -41,5 +42,10 @@ client.on("joined", () => {
 // Costume change function
 async function cost() {
     await client.changeCostume(cos1.value, cos2.value);
+}
+
+async function fa() {
+    const res = await fetch("https://apis.kahoot.it/game-reward-service/api/v1/config/avatar?showPartnerCollections=false");
+    console.log(res);
 }
 </script>

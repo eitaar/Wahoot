@@ -113,7 +113,7 @@ export class Client extends EventEmitter {
                 case "meta":
                     await this.metaWsHandler(channel, response);
                     break;
-                case "service":
+                case "service": 
                     await this.serviceWsHandler(channel, response);
                     break;
                 default:
@@ -166,7 +166,10 @@ export class Client extends EventEmitter {
                     }
                     break;
                 default:
-                    console.log("Unhandled action in serviceWsHandler:", this.msgid, data);
+                    if (!data.data.content) {
+                        console.log("Unhandled action in serviceWsHandler:", this.msgid, data);
+                    }
+                    console.log("Unhandled action in serviceWsHandler:", this.msgid, data, JSON.parse(data.data.content));
                     break;
             }
         } catch (error) {

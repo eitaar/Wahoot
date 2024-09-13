@@ -1,15 +1,15 @@
 <template>
   <div id="darkArea" ref="darkArea" v-show="settingOpen">
-    <div id="setting" ref="setting" :style="{ backgroundColor: acc2 }">
+    <div id="setting" ref="setting" :style="{ backgroundColor: base }">
       <div id="settingMenu">
         <div class="modules" id="moduleWrapper">
           <div>
-            <h4 @click="toggleModuleArrow"style="padding-left: 10%; margin-bottom: 0; color: #0f0f0f; font-size: 2.5vmin; cursor: pointer; user-select: none;">
+            <h4 @click="toggleModuleArrow"style="padding-left: 10%; margin-bottom: 0; font-size: 2.5vmin; cursor: pointer; user-select: none;" :style="{color:text1}">
               Modules
-              <img ref="Marrow" @click="toggleModuleArrow" src="/assets/img/triangleArrow.png" style="height:1.75vmin; margin-left: -1.5%; transform: rotate(90deg);" />
+              <img ref="Marrow" @click="toggleModuleArrow" src="/assets/img/triangleArrow.png" style="height:1.75vmin; margin-left: -1.5%; transform: rotate(90deg);" loading="lazy"/>
             </h4>
           </div>
-          <div ref="modulesList">
+          <div ref="modulesList" :style="{color:text1}">
             <div id="m1Title">
               <h4 class="moduleTitle">Client</h4>
             </div>
@@ -45,7 +45,7 @@
 
 <script setup>
 import { ref } from 'vue';
-const { acc1, acc2 } = useColorStore(); 
+const { base, acc1, acc2, text1 } = useColorStore(); 
 
 const settingOpen = ref(false);
 const darkArea = ref(null);
@@ -129,7 +129,6 @@ function toggleModuleArrow() {
 
 .moduleTitle {
   padding-left: 17.5%;
-  color: #0f0f0f;
   font-size: 1.85vmin;
   cursor: pointer;
 }
@@ -142,7 +141,6 @@ function toggleModuleArrow() {
   border-radius: 100vmin;
   right: 1%;
   top: 2%;
-  color: #000;
   font-size: 2.7vmin;
   font-weight: bold;
   box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);

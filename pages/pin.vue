@@ -4,13 +4,13 @@
     <square :style="{backgroundColor:sub}"/>
     <ellipsis :style="{backgroundColor:sub}"/>
     <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
-    <div id="input" class="center" ref="input" >
+    <div id="input" class="center" ref="input" :style="{backgroundColor : sub}">
         <styledinput ref="gamePinInput"placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" disabled />
-        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput"v-else/>
+        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput" v-else />
         <styledbtn @click="checkPin" ref="gamePinSubmitBtn"v-if="isPinInput" />
         <div div v-else>
-          <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" style="opacity: 0;" disabled/>
-          <styledsmallbtn @click="submitNickname" ref="nicknameSubmitBtn" id="nicknameSubmitBtn" style="opacity: 0;" disabled/>
+          <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" disabled/>
+          <styledsmallbtn @click="submitNickname" ref="nicknameSubmitBtn" id="nicknameSubmitBtn" disabled/>
         </div>
     </div>
     <div id="notification-wrapper" style="position: absolute; right: 10%; bottom: 10%;">
@@ -18,7 +18,7 @@
         <span v-html="notification.message"></span>
       </div>
     </div>
-    <p style="color: #fff; text-align: left; position: absolute; bottom: -0.5%; cursor: pointer;user-select: none;" @click="verPopup = !verPopup">{{ ver }} </p>
+    <p style="text-align: left; position: absolute; bottom: -0.5%; cursor: pointer;user-select: none;font-size:2vmin" @click="verPopup = !verPopup" :style="{color:text1}">{{ ver }} </p>
     <rnpopup v-show="verPopup" @closePopup="verPopup = !verPopup"/>
     <setting />
   </div>
@@ -28,9 +28,9 @@
 import { Client } from '~/assets/src/kahoot/kahoot';
 import { ref, onMounted, computed, nextTick } from 'vue';
 
-const { base, sub, acc1, acc2, setColor, changeColorToDefault} = useColorStore();
+const { base, sub, acc1, acc2, text1, setColor, changeColorToDefault} = useColorStore();
 const client = new Client();
-const ver = ref('Indev 20240905');
+const ver = ref('Indev 20240912');
 const notifications = ref([
   { message: "<h1>test</h1>" },
   { message: "<p>error?</p>" }
@@ -62,7 +62,6 @@ const checkPin = async () => {
     if (gamePin.value.startsWith("/test")) {
       transformInput();
     } else if (!gamePin.value.length > 0) {
-      console.log("input pin");
     } else {
       const isPinValid = await client.checkPin(gamePin.value);
       if (isPinValid) {
@@ -97,6 +96,7 @@ const transformInput = async () => {
           nicknameSubmitBtn.value.styledSmallBtn.style.opacity = 1;
         })
         delay(250).then(()=>{
+          nicknameInput.value.styledInput.focus();
           nicknameGenerateBtn.value.styledSmallBtn.disabled = false;
           nicknameSubmitBtn.value.styledSmallBtn.disabled = false;
         });
@@ -120,10 +120,11 @@ const submitNickname = () => {
 };
 </script>
 
-<style>
+<style >
 body {
   text-align: center;
   overflow: hidden;
+  font-family: Calibri,sans-serif;
 }
 #background {
   position: fixed;
@@ -159,10 +160,9 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  background-color: #fff;
   padding: 20px;
   border-radius: 4px;
-  box-shadow: 3px 3px 5px 3px rgba(0,0,0,1);
+  box-shadow: 2px 2px 4px 2px rgba(0,0,0,1);
   width: 32.5vmin;
   height: 12.5vmin;
   animation: showInputArea 2s linear;

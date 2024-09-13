@@ -2,15 +2,19 @@ import { ref} from "vue";
 import { defineStore } from "pinia";
 
 export const useColorStore = defineStore("colorPallete",() => {
-    const base = ref("#365E32");
-    const sub = ref("#81A263");
-    const acc1 = ref("#E7D37F");
-    const acc2 = ref("#729762");
-    const text1 = ref("#000");
-    const text2 = ref("#fff");
+    const white = ref("#000000")
+    const base = ref("#222831");
+    const sub = ref("#393E46");
+    const acc1 = ref("#00ADB5");
+    const acc2 = ref("#EEEEEE");
+    const text1 = ref("#fff");
+    const text2 = ref("#202020");
 
     function setColor(type,color) {
         switch (type) {
+            case "white":
+                white.value = color;
+                break;              
             case "base":
                 base.value = color;
                 break;
@@ -23,17 +27,22 @@ export const useColorStore = defineStore("colorPallete",() => {
             case "acc2":
                 acc2.value = color;
                 break;
+            case "text1":
+                text1.value = color;
+                break;
             default:
                 console.error("Invalid color type");
         }
     }
     function changeColorToDefault() {
-        base.value = "#365E32";
-        sub.value = "#81A263";
-        acc1.value = "#E7D37F";
-        acc2.value = "#729762";
+        white.value = "#F0F2F3"
+        base.value = "#222831";
+        sub.value = "#393E46";
+        acc1.value = "#00ADB5";
+        acc2.value = "#EEEEEE";
+        text1.value = "#000"
     }
-    return { base, sub, acc1, acc2, text1, text2,setColor, changeColorToDefault};
+    return { white, base, sub, acc1, acc2, text1, text2,setColor, changeColorToDefault};
 },
 {
     persist: true,
