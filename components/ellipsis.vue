@@ -2,7 +2,7 @@
     <div ref="ellipsis" id="ellipsis"></div>
 </template>
 
-<style>
+<style scoped>
 #ellipsis {
   position: absolute;
   min-width: 70vmin;

@@ -15,10 +15,10 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Client } from '~/assets/src/kahoot/kahoot';
+import { kahoot } from '~/assets/src/kahoot/kahoot';
 
 // Define reactive references for the input fields
-const client = new Client();
+const client = new kahoot();
 const pin = ref("");
 const name = ref("");
 const cos1 = ref("");

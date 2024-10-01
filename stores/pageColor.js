@@ -1,20 +1,20 @@
-import { ref} from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 
-export const useColorStore = defineStore("colorPallete",() => {
+export const useColorStore = defineStore("colorPallete", () => {
     const white = ref("#000000")
     const base = ref("#222831");
     const sub = ref("#393E46");
     const acc1 = ref("#00ADB5");
-    const acc2 = ref("#EEEEEE");
+    const acc2 = ref("#CCCCCC");
     const text1 = ref("#fff");
     const text2 = ref("#202020");
 
-    function setColor(type,color) {
+    function setColor(type, color) {
         switch (type) {
             case "white":
                 white.value = color;
-                break;              
+                break;
             case "base":
                 base.value = color;
                 break;
@@ -42,9 +42,9 @@ export const useColorStore = defineStore("colorPallete",() => {
         acc2.value = "#EEEEEE";
         text1.value = "#000"
     }
-    return { white, base, sub, acc1, acc2, text1, text2,setColor, changeColorToDefault};
+    return { white, base, sub, acc1, acc2, text1, text2, setColor, changeColorToDefault };
 },
-{
-    persist: true,
-}
+    {
+        persist: true,
+    }
 );

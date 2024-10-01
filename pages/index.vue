@@ -1,5 +1,5 @@
 <template>
-    <div class="background" :style="{backgroundColor:base}"/>
+    <background />
     <div id="sidebar" :style="{backgroundColor:sub}"></div>
     <img id="img1"src="~/assets/img/webimage1.webp" :style="{border: `1vmin solid ${acc1}`}"/>
     <div id="titlearea">
@@ -13,17 +13,6 @@ const isTitle = ref(true);
 </script>
 
 <style scoped>
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    text-align: center;
-    background-position: center;
-    z-index: -1;
-}
 #sidebar {
     position:absolute;
     left:0;

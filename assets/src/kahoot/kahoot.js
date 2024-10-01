@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { createHandshake, secondHandshake, joinGame, ping, afterJoinGame, changeCostumeTemplate } from "./template";
 import { delay } from "./other";
 
-export class Client extends EventEmitter {
+export class kahoot extends EventEmitter {
     constructor() {
         super();
         this.ws = null;
@@ -113,7 +113,7 @@ export class Client extends EventEmitter {
                 case "meta":
                     await this.metaWsHandler(channel, response);
                     break;
-                case "service": 
+                case "service":
                     await this.serviceWsHandler(channel, response);
                     break;
                 default:
@@ -133,8 +133,8 @@ export class Client extends EventEmitter {
                         this.msgid++;
                         this.clientData.clientId = data.clientId;
                         this.wsEmitter("secondhandshake", secondHandshake(data.ext.timesync, this.clientData.clientId, this.msgid));
-                        await delay(750);  
-                        this.msgid++; 
+                        await delay(750);
+                        this.msgid++;
                         this.wsEmitter("joinGame", joinGame(
                             this.clientData.pin,
                             this.clientData.nickname,

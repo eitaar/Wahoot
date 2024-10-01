@@ -6,7 +6,7 @@
           <div>
             <h4 @click="toggleModuleArrow"style="padding-left: 10%; margin-bottom: 0; font-size: 2.5vmin; cursor: pointer; user-select: none;" :style="{color:text1}">
               Modules
-              <img ref="Marrow" @click="toggleModuleArrow" src="/assets/img/triangleArrow.png" style="height:1.75vmin; margin-left: -1.5%; transform: rotate(90deg);" loading="lazy"/>
+              <img ref="Marrow" @click="toggleModuleArrow" src="/assets/img/arrow.svg" style="height:1.80vmin; margin-left: -1.5%; transform: rotate(90deg);" loading="lazy"/>
             </h4>
           </div>
           <div ref="modulesList" :style="{color:text1}">
@@ -39,7 +39,7 @@
     </div>
   </div>
   <button ref="settingBtn" @click="toggleSettingVisibility" class="settingBtn" :style="{ backgroundColor: acc1 }">
-    <img id="settingImg" src="/assets/img/settings.webp" alt="Settings" />
+    <img id="settingImg" src="/assets/img/settings.svg" alt="Settings" />
   </button>
 </template>
 

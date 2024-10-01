@@ -1,7 +1,20 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
-  modules: ['v-wave/nuxt','@pinia/nuxt','@pinia-plugin-persistedstate/nuxt'],
+  modules: [
+    'v-wave/nuxt',
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/supabase',
+  ],
+  runtimeConfig: {
+    public: {
+      test: process.env.TEST
+    }
+  },
+  supabase: {
+    redirect: false,
+  },
   app: {
     head: {
       htmlAttrs: {

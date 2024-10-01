@@ -3,7 +3,7 @@
 </template>
 
 
-<style>
+<style scoped>
 #square {
   position: absolute;
   min-width: 70vmin;

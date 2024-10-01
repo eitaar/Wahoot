@@ -5,7 +5,7 @@
     </div>
 </template>
 
-<style>
+<style scoped>
     #popup {
         height: 75vmin;
         width: 80vmin;

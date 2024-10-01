@@ -1,7 +1,7 @@
 <template>
   <input class="styledInput" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" ref="styledInput" autocomplete="off"
   :style="{ backgroundColor: sub, border: `0.125rem solid ${acc2}`,color: text1}"
-  />
+  ></input>
 </template>
 
 <script setup>
@@ -12,7 +12,7 @@ const styledInput = ref(null);
 defineExpose({styledInput})
 </script>
 
-<style>
+<style scoped>
 .styledInput {
   position: absolute;
   text-align: center;

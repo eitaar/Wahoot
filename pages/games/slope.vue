@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 #wrapper {
   position: absolute;
   top: 50%;
