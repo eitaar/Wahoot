@@ -50,6 +50,6 @@ const { acc1,sub, text1 } = useColorStore();
     width: 75%;
     height: 40%;    
     border-radius: 1.5vmin;
-    background-color:#32CD32;
+    background-color:#218921;
 }
 </style>

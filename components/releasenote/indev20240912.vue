@@ -1,16 +1,10 @@
 <template>
     <div>
-        <h2 id="top">Release Note Indev 20241002</h2>
-        <h4 class="newTitle">New</h4>
-        <ul class="new-list">
-            <li><span>Added loading icon</span></li>
-            <li><span>Made loading screen</span></li>
-            <li><span>Started making auth system</span></li>
-            <li><span>Added Open Graph</span></li>
-        </ul>
+        <h2 id="top">Release Note Indev 20240912</h2>
         <h4 class="updateTitle">Update/Fix</h4>
         <ul class="update-list">
-            <li><span>Bug fix</span></li>
+            <li><span>Decided the colour theme (I think)</span></li>
+            <li><span>change code inside of kahoot.js so it can be shorter.</span></li>
         </ul>
         <!--<h4 class="removedTitle">Removed</h4>-->
     </div>
@@ -35,7 +29,7 @@
 .new-list {
     text-align: left;
     font-size: 1.75vmin;
-    list-style-type: '+ ';
+    list-style-type: '+  ';
     color: green;
     font-weight: bold;
 }
@@ -56,7 +50,7 @@
 .update-list {
     text-align: left;
     font-size: 1.75vmin;
-    list-style-type: '⟳ ';
+    list-style-type: '⟳  ';
     color: darkviolet;
     font-weight: bold;
 }

@@ -5,28 +5,16 @@ export default defineEventHandler(async (event) => {
     let responseStatus = 200;
     let sessionToken;
     let gameToken;
-
     try {
         const gameDataResponse = await fetch(`https://kahoot.it/reserve/session/${pin}?{Date.now()}`);
-
-        if (gameDataResponse.status === 404) {
-            return {status: 404, error: "Invalid pin"};
-        }
-
+        if (gameDataResponse.status === 404) {return {status: 404, error: "Invalid pin"};}
         data = await gameDataResponse.json();
         sessionToken = gameDataResponse.headers.get('x-kahoot-session-token');
-
-        if (sessionToken && data.challenge) {
-            gameToken = getToken(sessionToken, data.challenge);
-        }
+        gameToken = getToken(sessionToken, data.challenge);
     } catch (error) {
-        responseStatus = 404;
-        setResponseStatus(event, responseStatus);
         return {status: 404, error: error}
     }
-
-    setResponseStatus(event, responseStatus);
-
+    
     function decodeSessionToken(sessionToken, message, offsetEquation) {
         const r = reserveChallengeToAnswer(message, offsetEquation);
         const decodedString = atob(sessionToken);
@@ -46,11 +34,7 @@ export default defineEventHandler(async (event) => {
         const offsetEquation = challenge.slice(equalsIndex + 1).split(';')[0].trim();
         const messageMatch = challenge.match(/'(\d*[a-z]*[A-Z]*)\w+'/);
         const message = messageMatch ? messageMatch[0].slice(1, -1) : "";
-
-        return {
-            message,
-            offsetEquation
-        };
+        return {message,offsetEquation};
     }
 
     function reserveChallengeToAnswer(message, offsetEquation) {
@@ -66,10 +50,5 @@ export default defineEventHandler(async (event) => {
         return decodeSessionToken(sessionToken, message, offsetEquation);
     }
 
-    return {
-        status: responseStatus,
-        response: data,
-        sessionToken,
-        gameToken
-    };
+    return {status: 200,response: data,sessionToken,gameToken};
 });

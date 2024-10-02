@@ -16,7 +16,7 @@ defineExpose({styledInput})
 .styledInput {
   position: absolute;
   text-align: center;
-  top: 30%;
+  top: 50%;
   left: 50%;
   border: 0.125rem solid;
   transform: translate(-50%, -50%);

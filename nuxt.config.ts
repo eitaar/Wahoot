@@ -26,9 +26,14 @@ export default defineNuxtConfig({
         { name: 'description', content: 'A random Kahoot! client.' },
         { name: 'author', content: 'eitaaaar' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        // Open Graph meta tags for embedding
         { property: 'og:title', content: 'Wahoot!' },
         { property: 'og:description', content: 'A random Kahoot! client.' },
         { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: 'https://wahoot.netlify.app/pin' },
+        { property: 'og:image', content: 'https://wahoot.netlify.app/_nuxt/wahoot.C89vOizI.webp' },
+        { property: 'og:site_name', content: 'Wahoot!' },
+        { property: 'og:locale', content: 'en_US' },
       ],
     }
   },

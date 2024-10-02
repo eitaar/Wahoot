@@ -1,12 +1,15 @@
 <template>
   <background/>
+  <loading :text="loadingText" v-if="showLoading"/>
   <div>
     <square :style="{backgroundColor: sub}" />
     <ellipsis :style="{backgroundColor: sub}" />
-    <img src="/assets/img/wahootIndev.webp" alt="Wahoot logo" id="wahoot_logo" />
+    <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
     <div id="input" class="center" ref="input" :style="{backgroundColor : sub}">
-      <styledinput ref="gamePinInput" placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" :disabled="gamePinDisabled" />
-      <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput" v-else />
+      <div id="textBoxWrapper">
+        <styledinput ref="gamePinInput" placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" :disabled="gamePinDisabled"/>
+        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput" v-else />
+      </div>
       <styledbtn @click="checkPin" ref="gamePinSubmitBtn" v-if="isPinInput" />
       <div v-else>
         <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" :disabled="nicknameGenerateDisabled" />
@@ -31,7 +34,7 @@ import { ref, onMounted, nextTick } from 'vue';
 const { base, sub, text1 } = useColorStore();
 const { setClient } = useClientStore();
 const client = new kahoot();
-const ver = ref('Indev 20240912');
+const ver = ref('Indev 20241002');
 const notifications = ref([
   { message: "<h1>test</h1>" },
   { message: "<p>error?</p>" }
@@ -48,6 +51,8 @@ const nicknameSubmitBtn = ref(null);
 const gamePinDisabled = ref(false);
 const nicknameGenerateDisabled = ref(true);
 const nicknameSubmitDisabled = ref(true);
+const showLoading = ref(false);
+const loadingText = ref("Connecting to Kahoot");
 
 onMounted(() => {
   gamePinInput.value.styledInput.disabled = false;
@@ -57,15 +62,19 @@ onMounted(() => {
   manageStorage();
 });
 async function checkPin(){
+  showLoading.value = true;
   nextTick(() => {
     gamePinSubmitBtn.value.styledBtn.disabled = true;
   });
   if (gamePin.value.startsWith("/test")) {
+
+      showLoading.value = false;
       transformInput();
   } else if (!gamePin.value.length > 0) {
   } else {
     const isPinValid = await client.checkPin(gamePin.value);
     if (isPinValid) {
+      showLoading.value = false;
       transformInput();
     } else {
       console.log(`Game pin:${gamePin.value} is incorrect`);
@@ -193,7 +202,14 @@ body {
   animation: showInputArea 2s linear;
 }
 
-
+#textBoxWrapper {
+  position: absolute;
+  top:30%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 100%;
+  height:100%;
+}
 #nicknameGenerateBtn {
   position: absolute;
   left: 27.5%;
