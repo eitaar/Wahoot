@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         { property: 'og:description', content: 'A random Kahoot! client.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'https://wahoot.netlify.app/pin' },
-        { property: 'og:image', content: 'https://wahoot.netlify.app/_nuxt/wahoot.C89vOizI.webp' },
+        { property: 'og:image', content: 'https://wahoot.netlify.app/img/icon.png' },
         { property: 'og:site_name', content: 'Wahoot!' },
         { property: 'og:locale', content: 'en_US' },
       ],
