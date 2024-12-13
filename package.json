@@ -11,14 +11,19 @@
     "prod": "cls && nuxt build && node .output/server/index.mjs"
   },
   "dependencies": {
-    "@nuxtjs/supabase": "^1.4.0",
+    "@nuxtjs/supabase": "^1.2.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@pinia/nuxt": "^0.5.2",
+    "@vueuse/components": "^12.0.0",
+    "@vueuse/core": "^12.0.0",
+    "@vueuse/nuxt": "^12.0.0",
     "moment": "^2.30.1",
     "nuxt": "^3.11.2",
     "pinia": "^2.2.0",
     "v-wave": "^2.0.0",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "vue-lite-youtube-embed": "^1.2.4",
+    "vue-router": "^4.3.2",
+    "vue-simple-context-menu": "^4.1.0"
   }
 }
