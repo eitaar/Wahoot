@@ -1,9 +1,10 @@
-// middleware/checkclient.js
+
+import { storeToRefs } from 'pinia';
+
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { $pinia } = useNuxtApp(); 
-  const clientStore = useClientStore($pinia); 
-  const { Client } = clientStore;
-  if (!Client && to.query.dev !== "true") {
+  const { $pinia } = useNuxtApp();
+  const {clientStore} = storeToRefs(useClientStore());
+  if (!clientStore.value && to.query.dev !== "true") {
     return navigateTo("/pin");
-  } 
+  }
 });
