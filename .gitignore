@@ -18,6 +18,8 @@ logs
 .fleet
 .idea
 /pages/test/
+/stores/test.js
+/public/george/
 
 # Local env files
 .env

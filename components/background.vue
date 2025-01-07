@@ -1,8 +1,9 @@
 <template>
-    <div class="background" :style="{backgroundColor: base}" />
+    <div class="background" />
 </template>
 <script setup>
-const { base} = useColorStore();
+import { storeToRefs } from 'pinia';
+const { modulesList } = storeToRefs(useModuleConfigStore());
 </script>
 <style scoped>
 .background {
@@ -12,5 +13,6 @@ const { base} = useColorStore();
   width: 100%;
   height: 100%;
   z-index: -2;
+  background-color: v-bind("modulesList.theme.colors.base");
 }
 </style>

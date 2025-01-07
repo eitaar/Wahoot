@@ -1,7 +1,17 @@
 <template>
-    <div ref="square" id="square" />
+  <div ref="square" id="square" @click="changeSpeed" :class="{ fastRotation: isFastRotation }"></div>
 </template>
 
+<script setup>
+import { ref } from 'vue';
+import {storeToRefs} from 'pinia';
+const {modulesList} = storeToRefs(useModuleConfigStore());
+const isFastRotation = ref(false);
+function changeSpeed() {
+  console.log("clicked");
+  isFastRotation.value = !isFastRotation.value;
+}
+</script>
 
 <style scoped>
 #square {
@@ -11,7 +21,12 @@
   top: -15vmin;
   left: -15vmin;
   z-index: -2;
-  animation: enlargeAndRotate 1.5s forwards, rotateSquare 60s linear infinite 1.5s; 
+  background-color: v-bind("modulesList.theme.colors.sub");
+  animation: enlargeAndRotate 1.5s forwards, rotateSquare 60s linear infinite 1.5s;
+}
+
+.fastRotation {
+  animation: rotateSquare 10s linear infinite !important;
 }
 
 @keyframes enlargeAndRotate {
@@ -34,6 +49,3 @@
   }
 }
 </style>
-
-
-

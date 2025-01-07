@@ -1,16 +1,16 @@
 <template>
     <div>
-        <h2 id="top">Release Note Indev 20241002</h2>
+        <h2 id="top">Release Note β1.0.0</h2>
         <h4 class="newTitle">New</h4>
         <ul class="new-list">
-            <li><span>Added loading icon</span></li>
-            <li><span>Made loading screen</span></li>
-            <li><span>Started making auth system</span></li>
-            <li><span>Added Open Graph</span></li>
+            <li><span>animation</span></li>
+            <li><span>font (Roboto)</span></li>
         </ul>
         <h4 class="updateTitle">Update/Fix</h4>
         <ul class="update-list">
             <li><span>Bug fix</span></li>
+            <li><span>Added new module</span></li>
+            <li><span>kahoot.js almost done</span></li>
         </ul>
         <!--<h4 class="removedTitle">Removed</h4>-->
     </div>

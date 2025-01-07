@@ -16,19 +16,20 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-const { acc1, text2 } = useColorStore();
 const styledBtn = ref(null);
 const isHovered = ref(false);
-
+const moduleConfigs = useModuleConfigStore();
+const { modulesList } = storeToRefs(moduleConfigs);
+const { modifyConfig } = moduleConfigs;
 const buttonStyle = computed(() => ({
-  backgroundColor: isHovered.value ? '#04bcc4' : acc1,color: text2}));
+  backgroundColor: isHovered.value ? modulesList.value.theme.colors.acc1b : modulesList.value.theme.colors.acc1,color: modulesList.value.theme.colors.text2}));
 
 defineExpose({styledBtn});
 </script>
 
 <style scoped>
 .styledBtn {
-  font-family: Calibri,sans-serif,system-ui;
+  font-family:'Roboto', sans-serif;
   position: absolute;
   top: 70%;
   left: 50%;
@@ -41,9 +42,15 @@ defineExpose({styledBtn});
   font-weight: bold;
   font-size: 20px;
   box-shadow: 0px -4px inset rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease-in-out;
+  font-size: 2vmin;
 }
 
 .styledBtn:active {
   margin-top: 1%;
+}
+
+.styledBtn:hover {
+  transform: translate(-50%, -50%) scale(1.025);
 }
 </style>

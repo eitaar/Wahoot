@@ -16,11 +16,13 @@
 import { ref, computed } from 'vue';
 const styledSmallBtn = ref(null);
 const isHovered = ref(false);
-const { acc1, text2 } = useColorStore();
+const moduleConfigs = useModuleConfigStore();
+const { modulesList } = storeToRefs(moduleConfigs);
+const { modifyConfig } = moduleConfigs;
 
 const buttonStyle = computed(() => ({
-  backgroundColor: isHovered.value ? '#04bcc4' : acc1,
-  color: text2
+  backgroundColor: isHovered.value ? modulesList.value.theme.colors.acc1b : modulesList.value.theme.colors.acc1,
+  color: modulesList.value.theme.colors.text2
 }));
 
 defineExpose({ styledSmallBtn });
@@ -28,7 +30,7 @@ defineExpose({ styledSmallBtn });
 
 <style scoped>
 .styledSmallBtn {
-  font-family: Calibri,sans-serif,system-ui;
+  font-family: 'Roboto', sans-serif;
   position: absolute;
   top: 70%;
   transform: translate(-50%, -50%);
@@ -39,11 +41,16 @@ defineExpose({ styledSmallBtn });
   opacity: 0;
   border-radius: 4px;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 2vmin;
   box-shadow: 0px -4px inset rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease-in-out;
 }
 
 .styledSmallBtn:active {
   margin-top: 1%;
+}
+
+.styledSmallBtn:hover {
+  transform: translate(-50%, -50%) scale(1.025);
 }
 </style>

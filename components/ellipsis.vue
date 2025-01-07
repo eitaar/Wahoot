@@ -1,7 +1,10 @@
 <template>
     <div ref="ellipsis" id="ellipsis"></div>
 </template>
-
+<script setup>
+import {storeToRefs} from 'pinia';
+const {modulesList} = storeToRefs(useModuleConfigStore());
+</script>
 <style scoped>
 #ellipsis {
   position: absolute;
@@ -13,6 +16,7 @@
   z-index: -2;
   opacity: 1;
   animation: moveInEllipsis 1.5s ;
+  background-color: v-bind("modulesList.theme.colors.sub");
 }
 @keyframes moveInEllipsis{
     0% {

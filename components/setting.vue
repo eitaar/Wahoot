@@ -1,90 +1,97 @@
 <template>
-  <div id="darkArea" ref="darkArea" v-show="settingOpen">
-    <div id="setting" ref="setting" :style="{ backgroundColor: base }">
+  <div id="darkArea" ref="darkArea" v-show="settingOpen" @keyup.esc="closeOnEscape">
+    <div id="setting" ref="setting">
       <div id="settingMenu">
         <div class="modules" id="moduleWrapper">
           <div>
-            <h4 @click="toggleModuleArrow"style="padding-left: 10%; margin-bottom: 0; font-size: 2.5vmin; cursor: pointer; user-select: none;" :style="{color:text1}">
-              Modules
-              <img ref="Marrow" @click="toggleModuleArrow" src="/assets/img/arrow.svg" style="height:1.80vmin; margin-left: -1.5%; transform: rotate(90deg);" loading="lazy"/>
+            <h4 @click.left="toggleModuleArrow" @click.right="changeModuleFilter('all')" 
+            style="padding-left: 10%; margin-bottom: 0; font-size: 2.5vmin; cursor: pointer; user-select: none;" 
+            :style="{color:modulesList.theme.colors.acc2}"
+            >Modules
+              <img ref="Marrow" src="/assets/img/arrow.svg" :class="{'rotateArrowDown': ModuleListOpened, 'rotateArrowUp': !ModuleListOpened}" style="height:1.80vmin; margin-left: -1.5%;" loading="lazy"/>
             </h4>
           </div>
-          <div ref="modulesList" :style="{color:text1}">
-            <div id="m1Title">
-              <h4 class="moduleTitle">Client</h4>
-            </div>
-            <div id="m2Title">
-              <h4 class="moduleTitle">Visual</h4>
-            </div>
-            <div id="m3Title">
-              <h4 class="moduleTitle">InGame Action</h4>
-            </div>
+          <div ref="modulesLists" v-show="ModuleListOpened">
+            <div @click="changeModuleFilter('client')" id="m1Title"><h4 class="moduleTitle">Client</h4></div>
+            <div @click="changeModuleFilter('visual')" id="m2Title"><h4 class="moduleTitle">Visual</h4></div>
+            <div @click="changeModuleFilter('inGame')" id="m3Title"><h4 class="moduleTitle">InGame Action</h4></div>
           </div>
         </div>
       </div>
       <div id="settingBody">
-        <div v-show="allModules">
+        <div v-if="moduleFilter.all">
           <modules filter="all"/> 
         </div>
-        <div v-show="client">
+        <div v-if="moduleFilter.client">
           <modules filter="client"/>
         </div>
-        <div v-show="visual">
+        <div v-if="moduleFilter.visual">
           <modules filter="visual"/>
         </div>
-        <div v-show="inGame">
+        <div v-if="moduleFilter.inGame">
           <modules filter="inGame"/>
         </div>
       </div>
     </div>
   </div>
-  <button ref="settingBtn" @click="toggleSettingVisibility" class="settingBtn" :style="{ backgroundColor: acc1 }">
+  <button ref="settingBtn" @click="toggleSettingVisibility" class="settingBtn" :class="{loadBtnIn:loadIn == 'true'?true:false}">
     <img id="settingImg" src="/assets/img/settings.svg" alt="Settings" />
   </button>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-const { base, acc1, acc2, text1 } = useColorStore(); 
-
+import { ref, onMounted, } from 'vue';
+import { storeToRefs} from 'pinia';
+import { onClickOutside } from '@vueuse/core'
+const props = defineProps(["loadIn"]);
+const moduleConfigs = useModuleConfigStore();
+const { modulesList } = storeToRefs(moduleConfigs);
+const { modifyConfig } = moduleConfigs;
 const settingOpen = ref(false);
 const darkArea = ref(null);
 const setting = ref(null);
+const settingBtn = ref(null);
 const Marrow = ref(null);
-const modulesList = ref(null);
+const modulesLists = ref(null);
 const ModuleListOpened = ref(true);
-const allModules = ref(true);
-const client = ref(false);
-const visual = ref(false);
-const inGame = ref(false);
-
+const moduleFilter = ref({ all: true, client: false, visual: false, inGame: false });
+onClickOutside(darkArea, closeOnEscape)
 function toggleSettingVisibility() {
   if (!settingOpen.value) {
+    window.addEventListener('keyup', closeOnEscape);
     settingOpen.value = true;
     darkArea.value.classList.add("openSetting");
     setting.value.classList.add("expandSetting");
+    setTimeout(() => {
+      setting.value.classList.remove("expandSetting");
+    }, 260);
   } else {
+    window.removeEventListener('keyup', closeOnEscape);
     setting.value.classList.add("shrinkSetting");
     darkArea.value.classList.add("closeSetting");
     setTimeout(() => {
       settingOpen.value = false;
-      darkArea.value.classList.remove("openSetting", "closeSetting");
-      setting.value.classList.remove("expandSetting", "shrinkSetting");
+      darkArea.value.classList.remove("closeSetting");
+      setting.value.classList.remove("shrinkSetting");
+      changeModuleFilter("all");
     }, 250);
   }
 }
+onMounted(()=> {
+    setTimeout(() => {  props.loadIn?settingBtn.value.classList.remove("loadBtnIn"):false;},1000);
+})
+function changeModuleFilter(filter) {
+  moduleFilter.value = { all: false, client: false, visual: false, inGame: false };
+  moduleFilter.value[filter] = true;
+}
 
 function toggleModuleArrow() {
-  if (ModuleListOpened.value) {
-    Marrow.value.classList.remove("rotateArrowDown");
-    Marrow.value.classList.add("rotateArrowUp");
-    ModuleListOpened.value = false;
-    modulesList.value.style.display = "none";
-  } else if (!ModuleListOpened.value) {
-    Marrow.value.classList.add("rotateArrowDown");
-    Marrow.value.classList.remove("rotateArrowUp");
-    ModuleListOpened.value = true;
-    modulesList.value.style.display = "block";
+  ModuleListOpened.value = !ModuleListOpened.value;
+}
+
+function closeOnEscape(event) {
+  if (event.key === 'Escape' && settingOpen.value) {
+    toggleSettingVisibility();
   }
 }
 </script>
@@ -98,27 +105,27 @@ function toggleModuleArrow() {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.75);
   opacity: 0;
-  z-index: 2;
-  pointer-events: none;
+  z-index: 3;
+  transition: opacity 0.25s ease-in-out;
 }
 
 #setting {
   position: absolute;
-  height: 75%; /* 高さを固定 */
-  width: 65%;
+  height: 75%; 
+  width: 67.5%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fff;
   border-radius: 2vmin;
   border: 2px solid #000;
-  z-index: 7;
   pointer-events: all;
   text-align: left;
-  overflow: hidden; /* settingコンテナの外に要素が出ないようにする */
+  overflow: hidden;
+  background-color: v-bind("modulesList.theme.colors.base");
 }
 
 #settingMenu {
+  font-family: 'Roboto', sans-serif;
   position: absolute;
   height: 100%;
   width: 20%;
@@ -128,9 +135,11 @@ function toggleModuleArrow() {
 }
 
 .moduleTitle {
+  font-family: 'Roboto', sans-serif;
   padding-left: 17.5%;
   font-size: 1.85vmin;
   cursor: pointer;
+  color: v-bind("modulesList.theme.colors.acc2");
 }
 
 .settingBtn {
@@ -148,7 +157,11 @@ function toggleModuleArrow() {
   justify-content: center;
   align-items: center;
   z-index: 3;
-  animation: moveSettingBtnDown 1.5s;
+  background-color: v-bind("modulesList.theme.colors.acc1");
+  transition: transform 0.25s ease-in-out;
+}
+.loadBtnIn {
+  animation: moveSettingBtnDown 1s ease-in-out forwards;
 }
 
 #settingImg {
@@ -172,8 +185,11 @@ function toggleModuleArrow() {
 }
 
 .settingBtn:active {
-  transform: translateY(0.1vmin);
+  margin-top:0.2vmin;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.75);
+}
+.settingBtn:hover {
+  transform: scale(1.075);
 }
 
 .openSetting {
@@ -219,24 +235,26 @@ function toggleModuleArrow() {
 }
 
 @keyframes expandSetting {
-  0% {
-    height: 0;
-    width: 0;
+  0%{
+    transform: translate(-50%,-50%) scale(0.25);
+  }
+  75% {
+    transform: translate(-50%,-50%) scale(1.075);
   }
   100% {
-    height: 75%;
-    width: 65%;
+    transform: translate(-50%,-50%) scale(1);
   }
 }
 
 @keyframes shrinkSetting {
   0% {
-    height: 75%;
-    width: 65%;
+    transform: translate(-50%,-50%) scale(1);
+  }
+  25% {
+    transform: translate(-50%,-50%) scale(1.075);
   }
   100% {
-    height: 0;
-    width: 0;
+    transform: translate(-50%,-50%) scale(0.25);
   }
 }
 

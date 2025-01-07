@@ -1,48 +1,41 @@
-<template>
-  <background/>
-  <loading :text="loadingText" v-if="showLoading"/>
-  <div>
-    <square :style="{backgroundColor: sub}" />
-    <ellipsis :style="{backgroundColor: sub}" />
-    <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
-    <div id="input" class="center" ref="input" :style="{backgroundColor : sub}">
-      <div id="textBoxWrapper">
-        <styledinput ref="gamePinInput" placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" :disabled="gamePinDisabled"/>
-        <styledinput ref="nicknameInput" placeholder="Nickname" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput" v-else />
+  <template>
+    <background/>
+    <loading :text="loadingText" dark="true" dot="true" v-if="showLoading"/>
+    <div id="body" ref="body">
+      <square/>
+      <ellipsis/>
+      <img src="/assets/img/wahoot.webp" alt="Wahoot logo" id="wahoot_logo" />
+      <div id="input" class="center" ref="input">
+        <div class="textBoxWrapper">
+          <styledinput class="txtBox" ref="gamePinInput" placeholder="Game pin" @keyup.enter="checkPin" v-model="gamePin" v-if="isPinInput" :disabled="gamePinDisabled" />
+          <styledinput class="txtBox" ref="nicknameInput" v-model="nickname" @keyup.enter="submitNickname" id="nicknameInput" v-else />
+        </div>
+        <styledbtn @click="checkPin" ref="gamePinSubmitBtn" v-if="isPinInput" />
+        <div v-else>
+          <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" :disabled="nicknameGenerateDisabled" />
+          <styledsmallbtn @click="submitNickname" ref="nicknameSubmitBtn" id="nicknameSubmitBtn" :disabled="nicknameSubmitDisabled" />
+        </div>
       </div>
-      <styledbtn @click="checkPin" ref="gamePinSubmitBtn" v-if="isPinInput" />
-      <div v-else>
-        <styledsmallbtn @click="generateNickname" ref="nicknameGenerateBtn" id="nicknameGenerateBtn" :disabled="nicknameGenerateDisabled" />
-        <styledsmallbtn @click="submitNickname" ref="nicknameSubmitBtn" id="nicknameSubmitBtn" :disabled="nicknameSubmitDisabled" />
-      </div>
+      <p style="text-align: left; position: absolute; bottom: -0.5%; cursor: pointer; user-select: none; font-size:2vmin" @click="isVerPopupOpen = !isVerPopupOpen" :style="{color:modulesList.theme.colors.text1}">{{ ver }} </p>
+      <rnpopup ref="verPopup" v-if="isVerPopupOpen"/>
+      <setting loadIn="true"/>
     </div>
-
-    <div id="notification-wrapper" style="position: absolute; right: 10%; bottom: 10%;">
-      <div class="notification" v-for="notification in notifications" :key="notification.message">
-        <span v-html="notification.message"></span>
-      </div>
-    </div>
-    <p style="text-align: left; position: absolute; bottom: -0.5%; cursor: pointer; user-select: none; font-size:2vmin" @click="verPopup = !verPopup" :style="{color:text1}">{{ ver }} </p>
-    <rnpopup v-show="verPopup" @closePopup="verPopup = !verPopup" />
-    <setting />
-  </div>
-</template>
+  </template>
 
 <script setup>
-import { kahoot } from '~/assets/src/kahoot/kahoot';
+import { Kahoot } from '~/assets/src/kahoot/kahoot';
 import { ref, onMounted, nextTick } from 'vue';
-const { base, sub, text1 } = useColorStore();
-const { setClient } = useClientStore();
-const client = new kahoot();
-const ver = ref('Indev 20241002');
-const notifications = ref([
-  { message: "<h1>test</h1>" },
-  { message: "<p>error?</p>" }
-]);
+import { onClickOutside } from '@vueuse/core'
+import {storeToRefs} from 'pinia';
+const {modulesList} = storeToRefs(useModuleConfigStore());
+const client = new Kahoot();
+const {clientStore} = storeToRefs(useClientStore());
+const ver = ref('β1.0.0');
 const gamePin = ref("");
 const nickname = ref("");
 const isPinInput = ref(true);
-const verPopup = ref(false);
+const verPopup = ref(null);
+const isVerPopupOpen = ref(false);
 const gamePinInput = ref(null);
 const nicknameInput = ref(null);
 const gamePinSubmitBtn = ref(null);
@@ -51,44 +44,55 @@ const nicknameSubmitBtn = ref(null);
 const gamePinDisabled = ref(false);
 const nicknameGenerateDisabled = ref(true);
 const nicknameSubmitDisabled = ref(true);
+const body = ref(null);
 const showLoading = ref(false);
 const loadingText = ref("Connecting to Kahoot");
-
+const fetchedNickName = ref(["loading"]);
+onClickOutside(verPopup, closePopup);
 onMounted(() => {
   gamePinInput.value.styledInput.disabled = false;
   gamePinInput.value.styledInput.focus();
   console.log("loaded");
-  setClient(client);
   manageStorage();
+  if (modulesList.value.infNickGen.preFetch.enabled) {
+    for (let i = 0; i < modulesList.value.infNickGen.preFetch.number; i++) {
+      fetch("https://apis.kahoot.it/namerator").then((response) => response.json())
+      .then((data) => {fetchedNickName.value.push(data.name);})
+    }
+  }
 });
+
+function closePopup() {isVerPopupOpen.value = false;}
+
 async function checkPin(){
   showLoading.value = true;
   nextTick(() => {
     gamePinSubmitBtn.value.styledBtn.disabled = true;
+    gamePinInput.value.styledInput.disabled = true;
   });
-  if (gamePin.value.startsWith("/test")) {
-
+  if (gamePin.value == "/test") {
       showLoading.value = false;
       transformInput();
-  } else if (!gamePin.value.length > 0) {
   } else {
     const isPinValid = await client.checkPin(gamePin.value);
     if (isPinValid) {
       showLoading.value = false;
       transformInput();
     } else {
-      console.log(`Game pin:${gamePin.value} is incorrect`);
+      console.log(gamePin.value.length?`Game pin:${gamePin.value} is incorrect`:`Game pin is not entered`);
+      showLoading.value=false;
       gamePinInput.value.styledInput.classList.add("inputFailed");
       await delay(760).then(() => {
         gamePinInput.value.styledInput.classList.remove("inputFailed");
         gamePinSubmitBtn.value.styledBtn.disabled = false;
+        gamePinInput.value.styledInput.disabled = false;
       });
     }
   }
 };
 
 async function transformInput(){
-  gamePinSubmitBtn.value.styledBtn.disabled = false;
+  gamePinSubmitBtn.value.styledBtn.disabled = true;
   gamePinInput.value.styledInput.classList.add("shrink");
   gamePinSubmitBtn.value.styledBtn.classList.add("shrink");
   delay(500).then(() => {
@@ -96,10 +100,10 @@ async function transformInput(){
     gamePinInput.value.styledInput.value = "";
     gamePinSubmitBtn.value.styledBtn.textContent = "";
   });
+  
   delay(750).then(() => {
     isPinInput.value = false;
     nextTick(() => {
-      nicknameInput.value.styledInput.placeholder = ""; 
       nicknameInput.value.styledInput.classList.add("expand");
       nicknameGenerateBtn.value.styledSmallBtn.classList.add("sb_expand");
       nicknameSubmitBtn.value.styledSmallBtn.classList.add("sb_expand");
@@ -127,21 +131,44 @@ function delay(time) {
 };
 
 async function generateNickname() {
-  const nickNameResponse = await (await fetch("https://apis.kahoot.it/namerator")).json();
-  nickname.value = nickNameResponse.name;
-  nicknameInput.value.styledInput.value = nickNameResponse.name;
+  if (fetchedNickName.value.length > 1) {
+    fetchedNickName.value.shift();
+    nickname.value = fetchedNickName.value[0];
+    nicknameInput.value.styledInput.value = fetchedNickName.value[0];
+  } else {
+    let fetchedNickName = await (await fetch("https://apis.kahoot.it/namerator")).json();
+    nickname.value = fetchedNickName.name;
+    nicknameInput.value.styledInput.value = fetchedNickName.name;
+  }
 };
 
 async function submitNickname() {
+  loadingText.value="Joining game";
+  showLoading.value = true;
+  nicknameInput.value.styledInput.classList.remove("expand");
   if (nickname.value.length === 0) {
     console.log("Please enter a nickname");
+    nicknameSubmitBtn.value.styledSmallBtn.disabled = true;
+    nicknameInput.value.styledInput.classList.add("inputFailed");
+      await delay(760).then(() => {
+        nicknameInput.value.styledInput.classList.remove("inputFailed");
+        nicknameSubmitBtn.value.styledSmallBtn.disabled = false;
+      });
   } else if (gamePin.value === "/test") {
-    navigateTo("/instructions?dev=true");
+      showLoading.value = false;
+      body.value.classList.add("fadeOut");
+      delay(750).then(() => {
+        navigateTo("game/instructions?dev=true");
+      });
   } else {
-    await client.join(gamePin.value, nickname.value);
+    await client.join(gamePin.value,`${modulesList.value.ucName.enabled? nickname.value.replace(/\\u{([0-9A-Fa-f]+)}/g, (_, p1) => String.fromCodePoint(parseInt(p1, 16))):nickname.value}`);
     client.on('joined', () => {
-      console.log('Successfully joined');
-      navigateTo("/instructions");
+      showLoading.value = false;
+      clientStore.value = client;
+      body.value.classList.add("fadeOut");
+      delay(750).then(() => {
+        navigateTo("game/instructions");
+      });
     });
   }
 };
@@ -155,23 +182,28 @@ function manageStorage() {
     localStorage.setItem("clientVersion", ver.value);
   }
   
-  if (sessionStorage.getItem("clientData") && localStorage.getItem("dev") == false) {
-    sessionStorage.clear();
-    console.log("aaaa");
-  }
 };
+
+client.on("error", (err) => {
+  if(err.error = "USER_INPUT") {
+    showLoading.value = false;
+    alert("Error: duplicate name.\nPage will be reloaded.");
+    location.reload();
+  }
+})
 </script>
 
 <style scoped>
 body {
   text-align: center;
   overflow: hidden;
-  font-family: Calibri,sans-serif;
+  font-family:'Roboto', sans-serif;
 }
 .center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  background-color: v-bind("modulesList.theme.colors.sub2");
 }
 
 #wahoot_logo {
@@ -181,43 +213,52 @@ body {
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: -1;
-  height: 28.125vmin;
-  width: 50vmin;
+  width: 60vmin;
   user-select: none;
   animation: showLogo 2s linear;
-  
+  transition: transform 0.35s ease-in-out;
 }
-
+#wahoot_logo:hover {
+  transform: translate(-50%,-50%) scale(1.1);
+}
+#body {
+  opacity: 1;
+}
 #input {
   position: absolute;
   top: 52.5%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  padding: 20px;
   border-radius: 4px;
   box-shadow: 2px 2px 4px 2px rgba(0,0,0,1);
-  width: 32.5vmin;
-  height: 12.5vmin;
+  width: 37.5vmin;
+  height: 17.5vmin;
   animation: showInputArea 2s linear;
 }
 
-#textBoxWrapper {
+.txtBox {
   position: absolute;
-  top:30%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  width: 100%;
-  height:100%;
+    transform: translate(-50%,-50%);
+    top: 30%;
+    left: 50%;
+
 }
+
 #nicknameGenerateBtn {
   position: absolute;
   left: 27.5%;
+  opacity: 0;
 }
 
 #nicknameSubmitBtn {
   position: absolute;
   left: 72.5%;
+  opacity: 0;
+}
+
+#nicknameInput {
+  opacity: 0;
 }
 .shrink {
   animation: shrink 0.75s ease-in-out;
@@ -232,7 +273,11 @@ body {
 .inputFailed {
   animation: inputFailed 0.75s ease-in-out;
 }
+.fadeOut {
+  animation: fadeOut 0.75s ease-in-out forwards;
+}
 @keyframes showInputArea {0% {opacity: 0;}10% {opacity: 0;}100% {opacity: 1;}}
+@keyframes fadeOut {0% {opacity: 1}100%{opacity: 0}}
 @keyframes expand {
   0% {
     width: 0%;
