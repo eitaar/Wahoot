@@ -1,7 +1,10 @@
-# Wahoot β1.0.0
-<span style="color:red">**Warning: This is Beta version and it probably have lots of bugs.**</span>
 
-Wahoot is a third-party light weight Kahoot client designed to provide extra functions and a better user experience, made with Nuxt.js 3.
+# Wahoot β1.0.0
+### Warning: This is Beta version and it probably have lots of bugs.
+
+
+Wahoot is a lightweight, third-party Kahoot! client designed to provide extra functions and a better user experience. It is built using Nuxt.js 3. Compared to the official Kahoot client, Wahoot uses less memory and has extra functionality. These are listed below.
+
 
 ## Table of Contents
 
@@ -9,7 +12,11 @@ Wahoot is a third-party light weight Kahoot client designed to provide extra fun
 - [Modules](#modules)
 
 ## Features
-Wahoot has lower memory usage compared to offucial client and has extra functionality compared to the official Kahoot client. These are listed below.
+ #### Bypasses Nickname Generator & Length Limit
+ ![Kahoot Screen](https://i.ibb.co/Zp80h9Vy/image.png)
+ #### Get More Point On Multiple Selection Question
+![enter image description here](https://i.ibb.co/MDnqVDPy/image.png)
+ 
 
 ## Modules
 - Infinite nickname generator.
