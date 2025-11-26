@@ -31,7 +31,7 @@ export class Kahoot extends EventEmitter {
     // Validate game PIN
     async checkPin(gamePin) {
         const data = await this.getGameData(gamePin);
-        return data.status == 200?true:false;
+        return data.status === 200;
     }
 
     // Join the game
@@ -150,36 +150,24 @@ export class Kahoot extends EventEmitter {
         switch (response.data.id) {
             case 1:
                 this.gameData = { ...this.gameData, gameBlockType: content.layout == "true_false"?"true_false":content.type, questionIndex: content.questionIndex ,getReadyTime: content.getReadyTimeRemaining};
-                
                 this.emit("questionReady", response);
-                console.log("questionReady");
-                console.log(response);
                 break;
             case 2:
                 this.isAnswerable = true;
                 this.emit("questionStart", response);
-                console.log("questionStart");
-                console.log(response);
                 break;
             case 8:
                 this.isAnswerable = false;
                 this.emit("questionEnd", response);
-                console.log("questionEnd");
-                console.log(response);
                 break;
             case 9:
                 this.emit("quizStart", response);
-                console.log("quizStart");
-                console.log(response);
                 break;
             case 17:
                 this.emit("clientMetaData", response);
-                console.log("clientMetaData");
-                console.log(response);
                 break;
             default:
-                console.log("Unhandled player action:", response.data.id);
-                console.log(response);
+                // Unhandled player action
                 break;
         }
     }

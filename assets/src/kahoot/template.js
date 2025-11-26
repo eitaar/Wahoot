@@ -21,7 +21,6 @@ function createHandshake() {
 function secondHandshake(serverTime, clientid, msgId) {
     l = Math.round((Date.now() - serverTime.tc - serverTime.p) / 2);
     o = serverTime.ts - serverTime.tc - l;
-    console.log(l, o);
     clientId = clientid;
     return [{
         "id": msgId.toString(),
