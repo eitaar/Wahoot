@@ -149,7 +149,7 @@ export class Kahoot extends EventEmitter {
 
         switch (response.data.id) {
             case 1:
-                this.gameData = { ...this.gameData, gameBlockType: content.layout == "true_false"?"true_false":content.type, questionIndex: content.questionIndex ,getReadyTime: content.getReadyTimeRemaining};
+                this.gameData = { ...this.gameData, gameBlockType: content.layout === "true_false"?"true_false":content.type, questionIndex: content.questionIndex ,getReadyTime: content.getReadyTimeRemaining};
                 this.emit("questionReady", response);
                 break;
             case 2:
