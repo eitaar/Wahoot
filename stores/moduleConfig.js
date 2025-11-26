@@ -36,6 +36,8 @@ export const useModuleConfigStore = defineStore("moduleConfig", () => {
         }
         if (modulesList.value[name]) {
             modulesList.value[name] = updateNestedValue(modulesList.value[name], config);
+        } else {
+            console.warn(`Module "${name}" not found.`);
         }
     }
 
