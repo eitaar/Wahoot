@@ -28,12 +28,10 @@ export const useModuleConfigStore = defineStore("moduleConfig", () => {
     }
 
     function modifyConfig(name, config) {
-        if (name == "theme" && !(/^\{.*\}$/.test(config))) {
+        if (name === "theme" && !(/^\{.*\}$/.test(config))) {
             if (Object.keys(modulesList.value.theme.presets).includes(config)) {
                 modulesList.value.theme =  updateNestedValue(modulesList.value.theme, {colors:modulesList.value.theme.presets[config]});
                 modulesList.value.theme.special.msg = config;
-            } else {
-                ;
             }
         }
         if (modulesList.value[name]) {

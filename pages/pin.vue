@@ -24,6 +24,7 @@
 
 <script setup>
 import { Kahoot } from '~/assets/src/kahoot/kahoot';
+import { delay } from '~/assets/src/kahoot/other';
 import { ref, onMounted, nextTick } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 import {storeToRefs} from 'pinia';
@@ -52,13 +53,19 @@ onClickOutside(verPopup, closePopup);
 onMounted(() => {
   gamePinInput.value.styledInput.disabled = false;
   gamePinInput.value.styledInput.focus();
-  console.log("loaded");
   manageStorage();
   if (modulesList.value.infNickGen.preFetch.enabled) {
-    for (let i = 0; i < modulesList.value.infNickGen.preFetch.number; i++) {
-      fetch("https://apis.kahoot.it/namerator").then((response) => response.json())
-      .then((data) => {fetchedNickName.value.push(data.name);})
-    }
+    // Prefetch nicknames in parallel for better performance
+    const fetchPromises = Array.from(
+      { length: modulesList.value.infNickGen.preFetch.number },
+      () => fetch("https://apis.kahoot.it/namerator")
+        .then((response) => response.json())
+        .then((data) => data.name)
+        .catch(() => null)
+    );
+    Promise.all(fetchPromises).then((names) => {
+      fetchedNickName.value.push(...names.filter(name => name !== null));
+    });
   }
 });
 
@@ -79,7 +86,6 @@ async function checkPin(){
       showLoading.value = false;
       transformInput();
     } else {
-      console.log(gamePin.value.length?`Game pin:${gamePin.value} is incorrect`:`Game pin is not entered`);
       showLoading.value=false;
       gamePinInput.value.styledInput.classList.add("inputFailed");
       await delay(760).then(() => {
@@ -126,10 +132,6 @@ async function transformInput(){
   });
 };
 
-function delay(time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-};
-
 async function generateNickname() {
   if (fetchedNickName.value.length > 1) {
     fetchedNickName.value.shift();
@@ -147,7 +149,6 @@ async function submitNickname() {
   showLoading.value = true;
   nicknameInput.value.styledInput.classList.remove("expand");
   if (nickname.value.length === 0) {
-    console.log("Please enter a nickname");
     nicknameSubmitBtn.value.styledSmallBtn.disabled = true;
     nicknameInput.value.styledInput.classList.add("inputFailed");
       await delay(760).then(() => {
@@ -177,15 +178,14 @@ function manageStorage() {
   if (!localStorage.getItem("clientVersion")) {
     localStorage.setItem("clientVersion", ver.value);
     verPopup.value = true;
-  } else if (localStorage.getItem("clientVersion") != ver.value) {
+  } else if (localStorage.getItem("clientVersion") !== ver.value) {
     verPopup.value = true;
     localStorage.setItem("clientVersion", ver.value);
   }
-  
 };
 
 client.on("error", (err) => {
-  if(err.error = "USER_INPUT") {
+  if(err.error === "USER_INPUT") {
     showLoading.value = false;
     alert("Error: duplicate name.\nPage will be reloaded.");
     location.reload();

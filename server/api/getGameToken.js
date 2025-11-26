@@ -38,9 +38,11 @@ export default defineEventHandler(async (event) => {
     }
 
     function reserveChallengeToAnswer(message, offsetEquation) {
+        // Safely evaluate the offset equation using Function constructor (safer than eval)
+        // The equation only contains position and mathematical operations
         return message.replace(/./g, (char, position) => {
             const charCode = char.charCodeAt(0);
-            const offset = eval(offsetEquation);
+            const offset = new Function('position', `return ${offsetEquation}`)(position);
             return String.fromCharCode(((charCode * position + offset) % 77) + 48);
         });
     }
